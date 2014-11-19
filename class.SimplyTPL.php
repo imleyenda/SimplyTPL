@@ -122,7 +122,7 @@ class SimplyTPL {
 
 	public function append($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($this->search_string($id, '<$1 $2>$5'.$data.'</$1>', $this->template);
+			$this->template = preg_replace($this->search_string($id), '<$1 $2>$5'.$data.'</$1>', $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'APPEND');
@@ -131,7 +131,7 @@ class SimplyTPL {
 
 	public function prepend($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($this->search_string($id, '<$1 $2>'.$data.'$5</$1>', $this->template);
+			$this->template = preg_replace($this->search_string($id), '<$1 $2>'.$data.'$5</$1>', $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'PREPEND');
