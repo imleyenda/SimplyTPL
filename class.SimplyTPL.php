@@ -1,13 +1,13 @@
 <?php
 /* ---------------------------------------------------------------------+
 | SimplyTPL:                                              build 0001    |
-| Easy and usefull template manager class	                            |
+| Easy and usefull template manager class                               |
 +-----------------------------------------------------------------------+
 | Copyright (C) 2014  Javier Pulido Hernández                           |
 |                                                                       |
 | This program is free software: you can redistribute it and/or modify  |
 | it under the terms of the GNU General Public License as published by  |
-| the Free Software Foundation, either version 3 of the License, or	    |
+| the Free Software Foundation, either version 3 of the License, or     |
 | (at your option) any later version.                                   |
 |                                                                       |
 | This program is distributed in the hope that it will be useful,       |
@@ -15,19 +15,19 @@
 | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
 | GNU General Public License for more details.                          |
 |                                                                       |
-| You should have received a copy of the GNU General Public License	    |
+| You should have received a copy of the GNU General Public License     |
 | along with this program.  If not, see <http://www.gnu.org/licenses/>. |
 +--------------------------------------------------------------------- */
 
 // SPANISH LANGUAGE
 define('SPA_ERROR_STRING',		'Debe ingresar un parametro.');
 define('SPA_ERROR_WHERE',		'Error en la funcion ');
-define('SPA_WRONG_CHARACTERS',	'El parametro contiene caracteres no permitidos.');
+define('SPA_WRONG_CHARACTERS',		'El parametro contiene caracteres no permitidos.');
 
 // ENGLISH LANGUAGE
 define('ENG_ERROR_STRING', 		'You have to enter parameter');
 define('ENG_ERROR_WHERE',		'Error in the function ');
-define('ENG_WRONG_CHARACTERS',	'The parameter contains illegal chracters.');
+define('ENG_WRONG_CHARACTERS',		'The parameter contains illegal chracters.');
 
 class SimplyTPL {
 	private $template;
@@ -48,7 +48,7 @@ class SimplyTPL {
 			$this->debug('The selected language no exists.<br>We applicated at default <b>English</b>.');
 		}
 
-        $this->template = file_get_contents('./root/templates/'. $file .'.tpl');
+        $this->template = file_get_contents($file . '.tpl');
     }
 
 	public function assign($data) {
