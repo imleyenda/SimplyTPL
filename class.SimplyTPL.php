@@ -1,13 +1,13 @@
 <?php
 /* ---------------------------------------------------------------------+
 | SimplyTPL:                                              build 0001    |
-| Easy and usefull template manager class                               |
+| Easy and usefull template manager class	                            |
 +-----------------------------------------------------------------------+
 | Copyright (C) 2014  Javier Pulido Hernández                           |
 |                                                                       |
 | This program is free software: you can redistribute it and/or modify  |
 | it under the terms of the GNU General Public License as published by  |
-| the Free Software Foundation, either version 3 of the License, or     |
+| the Free Software Foundation, either version 3 of the License, or	    |
 | (at your option) any later version.                                   |
 |                                                                       |
 | This program is distributed in the hope that it will be useful,       |
@@ -15,7 +15,7 @@
 | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
 | GNU General Public License for more details.                          |
 |                                                                       |
-| You should have received a copy of the GNU General Public License     |
+| You should have received a copy of the GNU General Public License	    |
 | along with this program.  If not, see <http://www.gnu.org/licenses/>. |
 +--------------------------------------------------------------------- */
 
@@ -122,7 +122,7 @@ class SimplyTPL {
 
 	public function append($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($search, '<$1 $2>$5'.$data.'</$1>', $this->template);
+			$this->template = preg_replace($this->search_string($id, '<$1 $2>$5'.$data.'</$1>', $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'APPEND');
@@ -131,7 +131,7 @@ class SimplyTPL {
 
 	public function prepend($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($search, '<$1 $2>'.$data.'$5</$1>', $this->template);
+			$this->template = preg_replace($this->search_string($id, '<$1 $2>'.$data.'$5</$1>', $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'PREPEND');
@@ -174,7 +174,7 @@ class SimplyTPL {
 		$alert .= "</div> \n";
 
 		echo $alert;
-	  return false;
+		return false;
 	}
 }
 ?>
