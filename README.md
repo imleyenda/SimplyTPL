@@ -3,6 +3,9 @@ SimplyTPL
 
 SimplyTPL is a easy and usefull template manager class write in PHP.
 
+CHANGELOG
+=========
+
 BUILD 0001 - 05/08/2014
 - Created mainclass SimplyTPL
 - Added function assign.
