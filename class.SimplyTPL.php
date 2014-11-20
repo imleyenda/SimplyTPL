@@ -1,6 +1,6 @@
 <?php
 /* ---------------------------------------------------------------------+
-| SimplyTPL:                                              build 0001    |
+| SimplyTPL:                                              build 0003    |
 | Easy and usefull template manager class                               |
 +-----------------------------------------------------------------------+
 | Copyright (C) 2014  Javier Pulido Hernández                           |
@@ -21,35 +21,47 @@
 
 // SPANISH LANGUAGE
 define('SPA_ERROR_STRING',		'Debe ingresar un parametro.');
+define('SPA_ERROR_TPL', 		'La plantilla no esta en el directorio.');
 define('SPA_ERROR_WHERE',		'Error en la funcion ');
-define('SPA_WRONG_CHARACTERS',		'El parametro contiene caracteres no permitidos.');
+define('SPA_WRONG_CHARACTERS',	'El parametro contiene caracteres no permitidos.');
 
 // ENGLISH LANGUAGE
 define('ENG_ERROR_STRING', 		'You have to enter parameter');
+define('ENG_ERROR_TPL', 		'The template is not in the directory.');
 define('ENG_ERROR_WHERE',		'Error in the function ');
-define('ENG_WRONG_CHARACTERS',		'The parameter contains illegal chracters.');
+define('ENG_WRONG_CHARACTERS',	'The parameter contains illegal chracters.');
 
 class SimplyTPL {
 	private $template;
-	private $html_tags = array('id');
+	private $dir;
 	
-    function __construct($file, $language = NULL) {
+    function __construct($directory, $language = NULL) {
 		$language = strtolower($language);
-		if ($language == 'spanish')
-		{
+		if ($language == 'spanish') {
 			define('ERROR_STRING',		ENG_ERROR_STRING);
+			define('ERROR_TPL',			ENG_ERROR_TPL);
 			define('ERROR_WHERE',		ENG_ERROR_WHERE);
 			define('WRONG_CHARACTERS',	ENG_WRONG_CHARACTERS);
 		} elseif ($language == "english") {
 			define('ERROR_STRING',		SPA_ERROR_STRING);
+			define('ERROR_TPL',			SPA_ERROR_TPL);
 			define('ERROR_WHERE',		SPA_ERROR_WHERE);
 			define('WRONG_CHARACTERS',	SPA_WRONG_CHARACTERS);
 		} else {
 			$this->debug('The selected language no exists.<br>We applicated at default <b>English</b>.');
 		}
-
-        $this->template = file_get_contents($file . '.tpl');
+		$this->dir = $directory;
     }
+	
+	public function template($file) {
+		if (file_exists($this->dir. $file .'.tpl')) {
+			$this->template = file_get_contents($this->dir. $file .'.tpl');
+			$this->template = preg_replace(array('/\>[^\S ]+/s','/[^\S ]+\</s','/(\s)+/s'), array('>','<','\\1'), $this->template);
+			$this->template = str_replace("> <", "><", $this->template);
+		} else {
+			$this->debug(ERROR_TPL . ' -> ' . $this->dir. $file .'.tpl');
+		}
+	}
 
 	public function assign($data) {
 		if(is_array($data)) {
@@ -71,39 +83,35 @@ class SimplyTPL {
 	}
 	
 	public function html($id = NULL, $data = NULL) {
-		if ($id)
-		{
+		if ($id) {
 			if(is_string($id))
 			{
-				if(preg_match('/^([a-z0-9_-]+)$/i', $id)) {
-					if($data) {
-						if(is_string($data)) {
-							$replace = '<$1 $2>'.$data.'</$1>';
-							$this->template = preg_replace($this->search_string($id), $replace, $this->template);
-							return True;
-						} else {
-							$this->debug(ERROR_STRING, ERROR_WHERE . 'HTML');
-						}
+				$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
+				$result 	= $matches[1];
+				if($data) {
+					if(is_string($data)) {
+						$this->template = str_replace($result, $data, $this->template);
+						return true;
 					} else {
-						$matches = '';
-						preg_match($this->search_string($id), $this->template, $matches);
-						return ($matches) ? $matches[0] : false;
+						$this->debug(ERROR_STRING, ERROR_WHERE . 'HTML');
 					}
 				} else {
-					$this->debug(WRONG_CHARACTERS);
+					return $result;
 				}
 			} else {
 				$this->debug(ERROR_STRING, ERROR_WHERE . 'HTML');
 			}
-		} else {
-			$this->template = $data . $this->template;
+		}else{
+			$this->template = ($data) ? $data : "";
 		}
 	}
 
 	public function after($id, $data) {
 		if(is_string($id) and is_string($data))
 		{
-			$this->template = preg_replace($this->search_string($id), '$0'.$data, $this->template);
+			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
+			$result 	= $matches[0];
+			$this->template = str_replace($result, $data . $result, $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'AFTER');
@@ -113,7 +121,9 @@ class SimplyTPL {
 	public function before($id, $data) {
 		if(is_string($id) and is_string($data))
 		{
-			$this->template = preg_replace($this->search_string($id), $data.'$0', $this->template);
+			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
+			$result = $matches[0];
+			$this->template = str_replace($result, $result . $data, $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'BEFORE');
@@ -122,7 +132,8 @@ class SimplyTPL {
 
 	public function append($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($this->search_string($id), '<$1 $2>$5'.$data.'</$1>', $this->template);
+			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
+			$this->template = str_replace($matches[1], $data . $matches[1], $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'APPEND');
@@ -131,19 +142,11 @@ class SimplyTPL {
 
 	public function prepend($id, $data) {
 		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($this->search_string($id), '<$1 $2>'.$data.'$5</$1>', $this->template);
+			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
+			$this->template = str_replace($matches[1], $matches[1] . $data, $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'PREPEND');
-		}
-	}
-
-	public function replace($id, $data) {
-		if(is_string($id) and is_string($data)) {
-			$this->template = preg_replace($this->search_string($id), $data, $this->template);
-			return true;
-		} else {
-			$this->error(ERROR_STRING . ERROR_WHERE . 'REPLACE');
 		}
 	}
 
@@ -156,10 +159,13 @@ class SimplyTPL {
 	}
 
 	private function search_string($id) {
-		return '/\<([a-z0-9]+)(?:[^\>]*)(id=(?:(\'|"))(?:'. $id .')(?:(\'|"))(?:[^\>]*))\>\s*(.*)\s*\<\/\1\>/i';
+		$matches = ''; preg_match('{(.*):(.*)=(.*)}is', $id, $matches);
+		$tag = $matches[1]; $attr = $matches[2]; $id = $matches[3];
+		return '{<'.$tag.'\s+'.$attr.'=(?:"|\')(?:'.$id.')(?:"|\')\s*>((?:(?: (?!<'.$tag.'[^>]*>|</'.$tag.'>). )++|<'.$tag.'[^>]*>(?1)</'.$tag.'>)*)</div>}six';
 	}
 
 	private function debug($error, $func = NULL) {
+		$this->template = false;
 		$alert = "<div style='font-family:verdana,arial;font-size:12px;border:1px dashed red;margin:20px;padding:3px;'>";
 		$alert .= "<div style='color:red;font-size:13px;'><b>WARNING</b></div>";
 		if(is_string($error)) {
@@ -177,4 +183,6 @@ class SimplyTPL {
 		return false;
 	}
 }
+
+print '<!-- GENERATED USING SIMPLYTPL BUILD 003 --!>';
 ?>
