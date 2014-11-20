@@ -111,7 +111,7 @@ class SimplyTPL {
 		{
 			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
 			$result 	= $matches[0];
-			$this->template = str_replace($result, $data . $result, $this->template);
+			$this->template = str_replace($result, $result . $data, $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'AFTER');
@@ -123,14 +123,14 @@ class SimplyTPL {
 		{
 			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
 			$result = $matches[0];
-			$this->template = str_replace($result, $result . $data, $this->template);
+			$this->template = str_replace($result, $data . $result, $this->template);
 			return true;
 		} else {
 			$this->error(ERROR_STRING . ERROR_WHERE . 'BEFORE');
 		}
 	}
 
-	public function append($id, $data) {
+	public function prepend($id, $data) {
 		if(is_string($id) and is_string($data)) {
 			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
 			$this->template = str_replace($matches[1], $data . $matches[1], $this->template);
@@ -140,7 +140,7 @@ class SimplyTPL {
 		}
 	}
 
-	public function prepend($id, $data) {
+	public function append($id, $data) {
 		if(is_string($id) and is_string($data)) {
 			$matches = ''; preg_match($this->search_string($id), $this->template, $matches);
 			$this->template = str_replace($matches[1], $matches[1] . $data, $this->template);
